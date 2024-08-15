@@ -7,28 +7,33 @@ pub enum Status {
     InProgress,
     Done,
 }
+
+#[derive(thiserror::Error, Debug, PartialEq)]
+pub enum StatusError {
+    #[error("Invalid status")]
+    InvalidStatus,
+}
 impl std::convert::TryFrom<String> for Status {
-    type Error = String;
+    type Error = StatusError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
-        match value.to_lowercase().as_str() {
-            "todo" => Ok(Status::ToDo),
-            "inprogress" => Ok(Status::InProgress),
-            "done" => Ok(Status::Done),
-            _ => Err("Invalid status".to_string()),
-        }
+        validate(&value)
     }
 }
 impl std::convert::TryFrom<&str> for Status {
-    type Error = String;
+    type Error = StatusError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value.to_lowercase().as_str() {
-            "todo" => Ok(Status::ToDo),
-            "inprogress" => Ok(Status::InProgress),
-            "done" => Ok(Status::Done),
-            _ => Err("Invalid status".to_string()),
-        }
+        validate(value)
+    }
+}
+
+fn validate(value: &str) -> Result<Status, StatusError> {
+    match value.to_lowercase().as_str() {
+        "todo" => Ok(Status::ToDo),
+        "inprogress" => Ok(Status::InProgress),
+        "done" => Ok(Status::Done),
+        _ => Err(StatusError::InvalidStatus),
     }
 }
 

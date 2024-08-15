@@ -5,30 +5,36 @@
 #[derive(Debug, PartialEq, Clone)]
 pub struct TicketDescription(String);
 
+#[derive(thiserror::Error, Debug, PartialEq)]
+pub enum DescriptionError {
+    #[error("The description cannot be empty")]
+    Empty,
+    #[error("The description cannot be longer than 500 bytes")]
+    TooLong,
+}
+
 impl std::convert::TryFrom<String> for TicketDescription {
-    type Error = String;
+    type Error = DescriptionError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
-        if value.is_empty() {
-            Err("The description cannot be empty".to_string())
-        } else if value.len() > 500 {
-            Err("The description cannot be longer than 500 bytes".to_string())
-        } else {
-            Ok(TicketDescription(value))
-        }
+        validate(&value)
     }
 }
 impl std::convert::TryFrom<&str> for TicketDescription {
-    type Error = String;
+    type Error = DescriptionError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        if value.is_empty() {
-            Err("The description cannot be empty".to_string())
-        } else if value.len() > 500 {
-            Err("The description cannot be longer than 500 bytes".to_string())
-        } else {
-            Ok(TicketDescription(value.to_string()))
-        }
+        validate(value)
+    }
+}
+
+fn validate(value: &str) -> Result<TicketDescription, DescriptionError> {
+    if value.is_empty() {
+        Err(DescriptionError::Empty)
+    } else if value.len() > 500 {
+        Err(DescriptionError::TooLong)
+    } else {
+        Ok(TicketDescription(value.to_string()))
     }
 }
 
