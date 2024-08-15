@@ -10,6 +10,26 @@ pub struct TicketStore {
     tickets: Vec<Ticket>,
 }
 
+// impl Iterator for TicketStore {
+//     type Item = Ticket;
+
+//     fn next(&mut self) -> Option<Self::Item> {
+//         if self.tickets.is_empty() {
+//             None
+//         } else {
+//             Some(self.tickets.remove(0))
+//         }
+//     }
+// }
+impl std::iter::IntoIterator for TicketStore {
+    type Item = Ticket;
+    type IntoIter = std::vec::IntoIter<Ticket>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.tickets.into_iter()
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Ticket {
     pub title: TicketTitle,
