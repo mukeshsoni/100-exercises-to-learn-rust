@@ -30,6 +30,19 @@ impl TicketStore {
     pub fn add_ticket(&mut self, ticket: Ticket) {
         self.tickets.push(ticket);
     }
+
+    pub fn iter(&self) -> std::slice::Iter<Ticket> {
+        self.tickets.iter()
+    }
+}
+
+impl<'a> std::iter::IntoIterator for &'a TicketStore {
+    type Item = &'a Ticket;
+    type IntoIter = std::slice::Iter<'a, Ticket>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
 }
 
 #[cfg(test)]
@@ -57,6 +70,10 @@ mod tests {
 
         let tickets: Vec<&Ticket> = store.iter().collect();
         let tickets2: Vec<&Ticket> = store.iter().collect();
+        // Because we implemented IntoIterator, we can also use it without calling store.iter()
+        for ticket in &store {
+            println!("{:?}", ticket);
+        }
         assert_eq!(tickets, tickets2);
     }
 }
